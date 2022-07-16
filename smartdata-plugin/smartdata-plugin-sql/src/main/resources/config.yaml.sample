@@ -1,0 +1,9 @@
+includedTables:
+  - name: customers
+    condition: customerNumber > 200
+    columns:
+      - name: contactLastName
+        replacement: bob the sponge
+
+excludedTables:
+  - name: sys_config

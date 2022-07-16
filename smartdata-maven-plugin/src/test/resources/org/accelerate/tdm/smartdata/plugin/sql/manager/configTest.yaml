@@ -1,0 +1,10 @@
+customisedTables:
+    - name: foo
+      condition: aCondition > 200
+      columns:
+        -   name: aColumn
+            value: '@replaceString()'
+        -   name: second
+            value: bob
+excludedTables:
+    - name: bar
