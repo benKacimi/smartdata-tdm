@@ -8,13 +8,12 @@
     <artifactId>smartdata</artifactId>
     <packaging>pom</packaging>
 
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.1</version>
 
     <modules>
         <module>smartdata-core</module>
         <module>smartdata-maven-plugin</module>
         <module>smartdata-plugin</module>
-        <module>smartdata-rules</module>
     </modules>
 
     <properties>
