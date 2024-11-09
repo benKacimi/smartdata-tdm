@@ -23,23 +23,24 @@ import org.slf4j.LoggerFactory;
 
 public class TableDaoImpl implements ITableDao {
 
-    private final static String SELECT = "SELECT ";
-    private final static String FROM = " FROM ";
-    private final static String WHERE = " WHERE ";
-    private final static String ALL_COLUMNS = " * ";
-
-    protected static final Logger LOGGER = LoggerFactory.getLogger(Table.class);
+    private static final String SELECT = "SELECT ";
+    private static final String ALL_COLUMNS = " * ";
+    private static final String FROM = " FROM ";
+    private static final String WHERE = " WHERE ";
+    
+    protected static final Logger LOGGER = LoggerFactory.getLogger(TableDaoImpl.class);
    
     @Override
     public Table read(final String tableName, final String condition) {
-        try (Connection jdbcConn = ThreadContext.getConnection()) {
-            LOGGER.info("{} - Starting SQLWorker run...",  tableName + " " + Thread.currentThread().getName());
-            PreparedStatement statement =  jdbcConn.prepareStatement(buildSqlExtractionRequest(tableName, condition));
+        try (   Connection jdbcConn = ThreadContext.getConnection(); 
+                PreparedStatement statement = jdbcConn.prepareStatement(buildSqlExtractionRequest(tableName, condition))) {
+            
+            LOGGER.info("{} - Starting SQLWorker run...",  tableName);
             ResultSet resultset = statement.executeQuery();
-            Column[] columnNameTab =  getColumnList(tableName);
-            List<Map<Column,String>> rows = new ArrayList<Map<Column,String>>();
+            Column[] columnNameTab =  getColumnListForAGiventTable(tableName);
+            List<Map<Column,String>> rows = new ArrayList<>();
             while (resultset.next()) { 
-                Map<Column,String> aRow = new HashMap<Column,String>();
+                Map<Column,String> aRow = new HashMap<>();
                 for(int i=0;i < columnNameTab.length; i++){
                     aRow.put(columnNameTab[i], resultset.getString(columnNameTab[i].getColumnName())); 
                 }
@@ -56,26 +57,25 @@ public class TableDaoImpl implements ITableDao {
     }
 
     private String buildSqlExtractionRequest (final String tableName, final String condition){
-        StringBuffer query = new StringBuffer(SELECT);
+        StringBuilder query = new StringBuilder(SELECT);
 
         query.append(ALL_COLUMNS).append(FROM).append(tableName);  
         if (condition != null && !"".equals(condition))
             query.append(WHERE).append(condition);
-        LOGGER.debug("{} - SQLWorker buildSqlExtractionRequest - sqlRequest  :", query.toString());
+        LOGGER.debug("{} - SQLWorker buildSqlExtractionRequest - sqlRequest  :", query);
         return query.toString();
     }
 
-    private Column[] getColumnList(final String tableName) {
+    private Column[] getColumnListForAGiventTable(final String tableName) {
         try {
-            LOGGER.info("{} - Starting getColumnList run...",  tableName + " " + Thread.currentThread().getName());
+            LOGGER.info("{} - Starting getColumnList run...", tableName);
             Connection jdbcConn =  ThreadContext.getConnection();
             IDatabaseConnection dbUnitDatabaseConnection = new DatabaseConnection(ThreadContext.getConnection());
             DatabaseConfig dbConfig = dbUnitDatabaseConnection.getConfig();
             // added this line to get rid of the warning
             dbConfig.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, DBUnitDataTypeFactory.getInstance(jdbcConn.getMetaData().getDatabaseProductName()));
             IDataSet dataSet = dbUnitDatabaseConnection.createDataSet();
-            Column[] columns = dataSet.getTableMetaData(tableName).getColumns();
-            return columns;
+            return dataSet.getTableMetaData(tableName).getColumns();
         }
         catch (SQLException | DatabaseUnitException e) {
             LOGGER.error("SQLWorker.getColumnList error - {}", e.getMessage());

@@ -28,6 +28,11 @@ public class SchemaDaoImpl implements ISchemaDao {
         return schemaResult;
     }
     
+    /**
+     * Get the list of tables name
+     * @return
+     * @throws TdmException
+     */ 
     private List<String> getTablesNameList() throws TdmException {
         try (Connection jdbcConn =  ThreadContext.getConnection()) { 
             IDatabaseConnection conn = new DatabaseConnection(jdbcConn);
@@ -38,7 +43,6 @@ public class SchemaDaoImpl implements ISchemaDao {
             String[] tablesName = dataSet.getTableNames();
             return  Arrays.asList(tablesName);
         } catch (SQLException | DatabaseUnitException e) {
-            LOGGER.error(e.getMessage(),"getTablesListName");
             throw (new TdmException(e.getMessage()));
         }
     }

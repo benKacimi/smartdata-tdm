@@ -8,8 +8,8 @@ import org.accelerate.tdm.smartdata.plugin.sql.parameters.dataset.TableParameter
 import org.accelerate.tdm.smartdata.plugin.sql.worker.dao.ITableDao;
 import org.accelerate.tdm.smartdata.plugin.sql.worker.dao.TableDaoImpl;
 import org.accelerate.tdm.smartdata.plugin.sql.worker.domain.Table;
-import org.accelerate.tdm.smartdata.rules.engine.RulesEngine;
-import org.accelerate.tdm.smartdata.rules.engine.ThreadContext;
+import org.accelerate.tool.interpreter.rules.engine.RulesEngine;
+import org.accelerate.tool.interpreter.rules.engine.ThreadContext;
 import org.dbunit.dataset.Column;
 
 public class TableRepositoryImpl implements ITableRepository {
@@ -17,6 +17,10 @@ public class TableRepositoryImpl implements ITableRepository {
     private  ITableDao tableDao = new TableDaoImpl();
     
     @Override
+    /**
+     * Retrieve the table from the database and apply the rules   
+     * @param TableParameter
+     */
     public Table get(final TableParameter filter) {
         Table tableResult = tableDao.read(filter.getName(), filter.getCondition());
         List<Map<Column,String>> rows = tableResult.getRows();
@@ -28,7 +32,7 @@ public class TableRepositoryImpl implements ITableRepository {
                     if (replacementMap != null){
                         String lexem = replacementMap.get(columnKey.getColumnName());
                         if (lexem != null && !"".equals(lexem)){
-                            putRowInThreadContext(aRow);
+                            putRowInThreadContextForRuleEngine(aRow);
                             aRow.replace(columnKey,engine.execute(lexem));
                         }
                     }
@@ -39,9 +43,9 @@ public class TableRepositoryImpl implements ITableRepository {
         return tableResult;
     } 
 
-    protected void putRowInThreadContext(final Map<Column,String> aRow){
+    protected void putRowInThreadContextForRuleEngine(final Map<Column,String> aRow){
         if (aRow != null) {
-            Map<String, String> resultMpap = new HashMap<String,String>();
+            Map<String, String> resultMpap = new HashMap<>();
             aRow.forEach((columnKey, columnValue) -> {
                 resultMpap.put(columnKey.getColumnName(), columnValue);
             });

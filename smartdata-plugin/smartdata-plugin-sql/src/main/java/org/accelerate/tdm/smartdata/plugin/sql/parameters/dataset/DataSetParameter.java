@@ -31,7 +31,7 @@ public class DataSetParameter implements IManagerConfiguration {
             return null;
         for (TableParameter aTable : tableList) {
             if (tableName.equalsIgnoreCase(aTable.getName())) 
-            return aTable;
+                return aTable;
         }
         return null;
     }

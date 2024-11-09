@@ -32,11 +32,7 @@
       <artifactId>smartdata-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-    <dependency>
-      <groupId>${project.parent.groupId}</groupId>
-      <artifactId>smartdata-plugin-mysql</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
+
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>

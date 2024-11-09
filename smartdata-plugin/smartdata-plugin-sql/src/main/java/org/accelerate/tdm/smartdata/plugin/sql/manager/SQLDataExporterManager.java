@@ -14,6 +14,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import org.accelerate.tdm.smartdata.core.configuration.ISmartDataConfiguration;
 import org.accelerate.tdm.smartdata.core.exception.TdmException;
+import org.accelerate.tdm.smartdata.core.exporter.IExporter;
 import org.accelerate.tdm.smartdata.core.manager.SmartDataManager;
 import org.accelerate.tdm.smartdata.core.tool.FileHelper;
 import org.accelerate.tdm.smartdata.plugin.sql.ThreadContext;
@@ -42,6 +43,9 @@ public class SQLDataExporterManager extends SmartDataManager {
     @Autowired(required = true)
     ISmartDataConfiguration cmdLineParameters;
 
+    @Autowired(required = true)
+    private IExporter exportFormat;
+
     @Override
     public void initContext() throws TdmException {
         try {
@@ -57,15 +61,16 @@ public class SQLDataExporterManager extends SmartDataManager {
         List<String> tablesListName = getTablesNameList();
 
         ThreadLocalManagerThreadPool executor = new ThreadLocalManagerThreadPool(nbThread,nbThread, 0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>());
+                new LinkedBlockingQueue<>());
         executor.setDataSource(dataSource);
-        LOGGER.info("{} - Start pool of " + nbThread + " threads");
+        LOGGER.info("Start pool of {} threads " , " threads");
 
         tablesListName.forEach(aTable -> {
-            TableParameter sqlWorkerConfig = config.searchExcludedTable((String) aTable);
+            TableParameter sqlWorkerConfig = config.searchExcludedTable(aTable);
             if (sqlWorkerConfig == null) {
                 IDefaultSQLWorker sqlWorker = getWorkerInstance();
-                sqlWorkerConfig = config.searchIncludedTable((String) aTable);
+                sqlWorker.setExporter(exportFormat);
+                sqlWorkerConfig = config.searchIncludedTable(aTable);
                 if (sqlWorkerConfig == null)
                     sqlWorkerConfig = new TableParameter(aTable, null, null);
                 sqlWorker.setConfig(sqlWorkerConfig); 
@@ -81,15 +86,14 @@ public class SQLDataExporterManager extends SmartDataManager {
 
     @Override
     public void end() throws TdmException {
+        LOGGER.debug("{} - end- completed.",SQLDataExporterManager.class);
     }
     
     protected DataSetParameter readConfigFile() throws IOException {
         String absolutePath = FileHelper.getAbsolutePath(((DefaultSQLConfiguration)cmdLineParameters).getConfigFilePath());
         try (FileReader file = new FileReader(absolutePath)) {
-            // TODO trouver un meilleur parseur prenant en charge les commentaires
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            DataSetParameter conf = mapper.readValue(file, DataSetParameter.class);
-            return conf;
+            return mapper.readValue(file, DataSetParameter.class);
         }
     }
 
@@ -99,8 +103,7 @@ public class SQLDataExporterManager extends SmartDataManager {
             ISchemaRepository schemaRepo = new SchemaRepositoryImpl();
             Schema schema = schemaRepo.get();
             return schema.getTableList();
-        } catch (SQLException e) {
-            LOGGER.error("SQLDataExporterManager - cannot get schema tables thread due to jdbcConnection error : {} ", e.getMessage());
+        } catch (SQLException e) { 
             throw new TdmException(e.getLocalizedMessage());
         }
         finally {
@@ -114,7 +117,6 @@ public class SQLDataExporterManager extends SmartDataManager {
     @Override
     protected IDefaultSQLWorker getWorkerInstance() {
         return SQLWorkerFactory.getWorkerInstance(dataBaseProductName);
-        //return new DefaultSQLWorker();
     }
 
     public void awaitTerminationAfterShutdown(ExecutorService threadPool) {

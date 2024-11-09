@@ -3,15 +3,15 @@ customisedTables:
     condition: customerNumber > 200
     columns:
       -   name: customerName
-          value: '@encrypt.AESEncrypt($customerName)'
+          value: '@encrypt.AESEncrypt(${customerName})'
       -   name: customerNumber
           value: '@anonymize.generateUUID()'
 excludedTables:
   - name: sys_config
---- name: employees
---- name: orderdetails
---- name: offices  
---- name: orders
---- name: payments
---- name: products
---- name: productlines@
+  - name: employees
+  - name: orderdetails
+  - name: offices  
+  - name: orders
+  - name: payments
+  - name: products
+  - name: productlines

@@ -8,7 +8,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 
 public class SmartDataApp {
 
-    protected final static String BASE_PACKAGE = "org.accelerate.tdm.smartdata.plugin";
+    protected static final String BASE_PACKAGE = "org.accelerate.tdm.smartdata.plugin";
     private String storage;
 
     public SmartDataApp(final String storage){
@@ -17,8 +17,9 @@ public class SmartDataApp {
 
     public void execute() throws TdmException {
         ApplicationContext context = new AnnotationConfigApplicationContext(BASE_PACKAGE + "." + storage);
+        Object csv = context.getBean("csv");
         ISmartDataManager exporterManager = (ISmartDataManager) context.getBean(storage);
         exporterManager.run();
-        ((AbstractApplicationContext) context).close();
+       // ((AbstractApplicationContext) context).close();
     }
 }

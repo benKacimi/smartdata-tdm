@@ -1,9 +1,8 @@
 package org.accelerate.tdm.smartdata.plugin.sql.manager;
 
-import static org.junit.Assert.assertTrue;
-
 import org.accelerate.tdm.smartdata.plugin.sql.configuration.DefaultSQLConfiguration;
 import org.accelerate.tdm.smartdata.plugin.sql.parameters.dataset.DataSetParameter;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -22,11 +21,11 @@ public class YamlReaderTest {
             manager.setCmdLineParameters(parameter);
 
             DataSetParameter conf = manager.readConfigFile();
-            assertTrue(conf.getCustomisedTables().size() == 1);
-            assertTrue(conf.getExcludedTables().size() == 1);
+            Assert.assertTrue(conf.getCustomisedTables().size() == 1);
+            Assert.assertTrue(conf.getExcludedTables().size() == 1);
 
         } catch (IOException e) {
-            assertTrue(e.getLocalizedMessage(), false);
+            Assert.assertTrue(e.getLocalizedMessage(), false);
         }
     }
 }

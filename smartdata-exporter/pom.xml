@@ -4,22 +4,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.accelerate.tdm</groupId>
-    <artifactId>smartdata</artifactId>
+    <parent>
+        <artifactId>smartdata</artifactId>
+        <groupId>org.accelerate.tdm</groupId>
+        <version>0.1.1</version>
+    </parent>
+
+    <artifactId>smartdata-exporter</artifactId>
     <packaging>pom</packaging>
-
-    <version>0.1.1</version>
-
-    <modules>
-        <module>smartdata-core</module>
-        <module>smartdata-maven-plugin</module>
-        <module>smartdata-plugin</module>
-        <module>smartdata-exporter</module>
-    </modules>
+    <name>SmartData Exporter Library</name>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
+    <modules>
+        <module>smartdata-exporter-core</module>
+        <module>smartdata-exporter-csv</module>
+        <module>smartdata-exporter-liquibase</module>
+   </modules>
 </project>

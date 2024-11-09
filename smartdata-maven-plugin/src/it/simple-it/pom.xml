@@ -18,19 +18,36 @@
       <plugin>
         <groupId>org.accelerate.tdm</groupId>
         <artifactId>smartdata-maven-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.1.1</version>
         <configuration>
           <properties>
-            <configurationFile>/Users/benamar.kacimi/Workspace/smartdata-tdm/smartdata-maven-plugin/src/main/resources/config.yaml</configurationFile>
-            <jdbcUrl>jdbc:mysql://localhost:33060/classicmodels</jdbcUrl>
+            <configurationFile>/Users/benamar.kacimi/Workspace/smartdata-tdm/smartdata-maven-plugin/src/it/simple-it/resources/config.yaml</configurationFile>
+            <jdbcUrl>jdbc:mysql://localhost:3306/classicmodels</jdbcUrl>
             <passwordFile>/Users/benamar.kacimi/Workspace/security/password.encrypt</passwordFile>
             <privateKeyFile>/Users/benamar.kacimi/Workspace/security/private_key.pem</privateKeyFile>
             <user>root</user>
           </properties>
         </configuration>
+        <dependencies>
+          <dependency>
+            <artifactId>smartdata-plugin-sql</artifactId>
+            <groupId>org.accelerate.tdm</groupId>
+            <version>0.1.1</version>
+          </dependency>
+          <dependency>
+            <artifactId>smartdata-plugin-mysql</artifactId>
+            <groupId>org.accelerate.tdm</groupId>
+            <version>0.1.1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.accelerate.tool</groupId>
+            <artifactId>interpreter-function</artifactId>
+            <version>0.1.0</version>
+          </dependency>
+        </dependencies>
         <executions>
           <execution>
-            <id>touch</id>
+            <id>export</id>
             <phase>validate</phase>
             <goals>
               <goal>export</goal>
